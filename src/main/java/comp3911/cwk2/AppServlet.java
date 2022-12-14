@@ -36,6 +36,7 @@ public class AppServlet extends HttpServlet {
   public void init() throws ServletException {
     configureTemplateEngine();
     connectToDatabase();
+    System.out.println("Servlet Initialized");
   }
 
   private void configureTemplateEngine() throws ServletException {
@@ -124,6 +125,7 @@ public class AppServlet extends HttpServlet {
         rec.setDoctorId(results.getString(6));
         rec.setDiagnosis(results.getString(7));
         records.add(rec);
+        System.out.println("Success!");
       }
     }
     return records;
