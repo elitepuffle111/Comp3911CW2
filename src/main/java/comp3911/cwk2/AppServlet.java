@@ -35,6 +35,9 @@ public class AppServlet extends HttpServlet {
   private final Configuration fm = new Configuration(Configuration.VERSION_2_3_28);
   private Connection database;
 
+  private int counter;
+  private String ip = "";
+
   @Override
   public void init() throws ServletException {
     configureTemplateEngine();
@@ -81,6 +84,21 @@ public class AppServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response)
    throws ServletException, IOException {
+    String ipaddr = request.getRemoteAddr();
+    if (ip == "") {
+      ip = ipaddr;
+    } else if (ip.equals(ipaddr)) {
+      System.out.println(++counter);
+    }
+    if (counter > 5) {
+      Template template = fm.getTemplate("toomuch.html");
+      try {
+        template.process(null, response.getWriter());
+      } catch (TemplateException e) {
+        throw new RuntimeException(e);
+      }
+      return;
+    }
      // Get form parameters
     String username = request.getParameter("username");
     String password = request.getParameter("password");
