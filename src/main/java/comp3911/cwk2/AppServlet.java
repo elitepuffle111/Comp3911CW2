@@ -22,6 +22,13 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.util.Base64;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+
 @SuppressWarnings("serial")
 public class AppServlet extends HttpServlet {
 
@@ -104,6 +111,24 @@ public class AppServlet extends HttpServlet {
   }
 
   private boolean authenticated(String username, String password) throws SQLException {
+    byte[] salt =  "1122".getBytes();
+    KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 64);
+    SecretKeyFactory f = null;
+    byte[] hash = null;
+    try {
+      f = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+    }
+    catch (NoSuchAlgorithmException e) {
+      System.out.println(e);
+    }
+    try {
+      hash = f.generateSecret(spec).getEncoded();
+    }
+    catch (InvalidKeySpecException e) {
+      System.out.println(e);
+    }
+    Base64.Encoder enc = Base64.getEncoder();
+    password = enc.encodeToString(hash);
     String query = String.format(AUTH_QUERY, username, password);
     try (Statement stmt = database.createStatement()) {
       ResultSet results = stmt.executeQuery(query);
