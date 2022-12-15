@@ -111,6 +111,7 @@ public class AppServlet extends HttpServlet {
         model.put("records", searchResults(surname));
         Template template = fm.getTemplate("details.html");
         template.process(model, response.getWriter());
+        counter = 0;
       }
       else {
         Template template = fm.getTemplate("invalid.html");
